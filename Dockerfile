@@ -7,20 +7,13 @@ RUN apt-get update && apt-get install -y \
     gcc curl ca-certificates\
     && rm -rf /var/lib/apt/lists/*
 
-# Download the latest installer
-ADD https://astral.sh/uv/install.sh /uv-installer.sh
+COPY requirements.txt .
 
-# Run the installer then remove it
-RUN sh /uv-installer.sh && rm /uv-installer.sh
-
-# Ensure the installed binary is on the `PATH`
-ENV PATH="/root/.local/bin/:$PATH"
+RUN pip install --no-cache-dir -r requirements.txt
 
 COPY app/ ./app/
 COPY main.py .
 COPY pyproject.toml .
 COPY uv.lock .
 
-RUN uv sync --locked
-
-ENTRYPOINT ["uv", "run", "main.py"]
+ENTRYPOINT ["python", "main.py"]
